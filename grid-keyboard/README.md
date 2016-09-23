@@ -1,0 +1,2 @@
+#Grid keyboard
+Grid keyboard is a grid of circles, each with an oscillator attached. You can turn them on by clicking on them - the amplitude of each oscillator is determined by the width of the corresponding circle. They can be turned off by clicking again. If you get in over your head with too many oscillators, you can click on the white circle at the bottom to reset the board.
