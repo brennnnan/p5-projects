@@ -9,8 +9,7 @@ var firstoct = [65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123];
 var allkeys = [];
 var cx, cy, cw;
 var lines = [];
-var ccc = 0;
-var bottomb;
+var button;
 
 function setup() {
 
@@ -60,7 +59,7 @@ function setup() {
 
   fill('rgba(10,100,200,.8');
   var g = 30;
-  bottomb = new dot(-10, cx / 2, cy - cw, cw, 0, 0, 0)
+  button = new dot(-10, cx / 2, cy - cw, cw, 0, 0, 0)
 
 }
 
@@ -72,9 +71,10 @@ function draw() {
 
   for (var c = 0; c < counter; c++) {
     if (dotarray[c].clicked) {
+      //assigning width and amp to each dot if it has been click
       dotarray[c].index += 1;
-      numb = ((dotarray[c].index) % (1000));
-      dotarray[c].width = vals[numb] * mul;
+      num = ((dotarray[c].index) % (1000));
+      dotarray[c].width = vals[num] * mul;
       dotarray[c].vibrator.amp(dotarray[c].width / 2)
     }
 
@@ -84,7 +84,7 @@ function draw() {
   fill('#D4F4DD');
   stroke(51);
   strokeWeight(1);
-  ellipse(bottomb.xctr, bottomb.yctr, bottomb.width, bottomb.width);
+  ellipse(button.xctr, button.yctr, button.width, button.width);
   noStroke();
 
   for (var dd = 0; dd < lines.length; dd++) {
@@ -105,9 +105,6 @@ function draw() {
 
 function mouseClicked() {
 
-  ccc++;
-
-
   for (var f = 0; f < counter; f++) {
     hit = collidePointCircle(mouseX, mouseY, dotarray[f].xctr, dotarray[f].yctr, dotarray[f].width);
 
@@ -119,7 +116,7 @@ function mouseClicked() {
         return;
       }
       dotarray[f].clicked = true;
-      dotarray[f].vibrator = new p5.Oscillator(dotarray[f].oscf, 'sine');
+      dotarray[f].vibrator = new p5.Oscillator(dotarray[f].oscfreq, 'sine');
       dotarray[f].vibrator.amp(.5, .2);
       dotarray[f].vibrator.start();
       return;
@@ -130,18 +127,18 @@ function mouseClicked() {
 }
 
 function mousePressed() {
-  hit1 = collidePointCircle(mouseX, mouseY, cx / 2, cy - cw, cw);
-  if (hit1) {
-    bottomb.clicked = 1;
-    bottomb.width -= 10;
+  hit = collidePointCircle(mouseX, mouseY, cx / 2, cy - cw, cw);
+  if (hit) {
+    button.clicked = 1;
+    button.width -= 10;
   }
 }
 
 
 function mouseReleased() {
-  if (bottomb.clicked == 1) {
-    bottomb.clicked = 0;
-    bottomb.width += 10;
+  if (button.clicked == 1) {
+    button.clicked = 0;
+    button.width += 10;
     for (var ii = 0; ii < dotarray.length; ii++) {
       if (dotarray[ii].vibrator != 0) dotarray[ii].vibrator.stop();
 
@@ -155,7 +152,7 @@ function mouseReleased() {
 
 function dot(_id, _xctr, _yctr, _width, _index, _clicked, _osc) {
   this.id = _id;
-  this.oscf = _osc;
+  this.oscfreq = _osc;
   this.xctr = _xctr;
   this.yctr = _yctr;
   this.width = _width;
