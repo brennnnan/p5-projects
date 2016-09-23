@@ -1,5 +1,5 @@
 #Sequencer
-This is a drum sequencer inspired by the sounds of the 909. 
+This is a drum sequencer inspired by the sounds of the 909. You can play with it at http://brennnnan.com/projects/sequencer/sequencer.html
 
 ##How to use:
 - Click on a dot to turn on that step. Each row represents one voice, and each column represents 1/16 note.
