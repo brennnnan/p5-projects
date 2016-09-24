@@ -2,7 +2,7 @@ swellValues = new Array(1000);
 dotarray = [];
 var offset = 120;
 var mul = 20;
-var firstoct = [65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123];
+var baseOctave = [65, 69, 73, 78, 82, 87, 92, 98, 104, 110, 117, 123];
 var allkeys = [];
 var canvasX, canvasY, buttonWidth;
 var lines = [];
@@ -39,7 +39,7 @@ function makeDots() {
   counter = 0;
   for (var i = 0; i < 8; i++) {
     for (var j = 0; j < 12; j++) {
-      allkeys.push(firstoct[j] * (pow(2, i)));
+      allkeys.push(baseOctave[j] * (pow(2, i)));
       dotarray.push(new dot(counter, (j * 60) + offset, (i + 2) * 60, swellValues[784] * 20, 784, false, allkeys[freqcounter]));
       counter++;
       freqcounter++;
@@ -63,7 +63,7 @@ function fillSwellArray() {
 function drawDots() {
   for (var c = 0; c < dotarray.length; c++) {
     if (dotarray[c].clicked) {
-      //assigning width and amp to each dot if it has been click
+      //assigning width and amp to each dot if it has been clicked
       dotarray[c].index += 1;
       num = ((dotarray[c].index) % (1000));
       dotarray[c].width = swellValues[num] * mul;
@@ -74,6 +74,7 @@ function drawDots() {
 }
 
 function drawButton() {
+  // apply color and draw reset button at bottom of screen
   fill('#D4F4DD');
   stroke(51);
   strokeWeight(1);
