@@ -18,7 +18,7 @@ function setup() {
   sines.push(sineslider1);
   sines.push(sineslider2);
   sines.push(sineslider3);
-  a=new oscTypeButton(200,200,'sine',20);
+  
   
 
 }
@@ -28,6 +28,9 @@ function draw() {
   //Draw each button
   for(var i=0; i<buttons.length; i++) {
     buttons[i].sketch();
+    buttons[i].oscSelector[0].sketch();
+    buttons[i].oscSelector[1].sketch();
+    buttons[i].oscSelector[2].sketch();
     if(buttons[i].active==1) {
       fill(10,240,10)
       ellipse(buttons[i].lediode.x,buttons[i].lediode.y,buttons[i].lediode.width,buttons[i].lediode.width)
@@ -41,7 +44,7 @@ function draw() {
     scaledfreq = map(sines[f].value, 0, 255, 220,1000)
     voices[f].osc.freq(scaledfreq)
   }
-  a.sketch();
+  
 }
 
 function mousePressed() {
@@ -71,6 +74,8 @@ function mouseReleased() {
     lastclicked = -1;
   }
 }
+
+
 
 function makebuttons() {
   buttons.push(new button(200,150,60,[200,200,200],0))
@@ -106,7 +111,12 @@ function button(x_,y_,width_,rgb_,id) {
   this.pressed = 0;
   this.id = id;
   this.rgb = rgb_;
-  this.lediode = new led(this.x+150,this.y,20)
+  this.lediode = new led(this.x+150,this.y,20);
+  this.oscSelector = [0,0,0];
+  this.oscSelector[0] = new oscTypeButton(this.x+50,this.y-24,'sine',20)
+  this.oscSelector[1] = new oscTypeButton(this.x+50,this.y,'triangle',20)
+  this.oscSelector[2] = new oscTypeButton(this.x+50,this.y+24,'square',20)
+  
 
   this.turnOn = function() {
     
