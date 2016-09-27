@@ -3,12 +3,14 @@ voices = []
 lastclicked = -1;
 sines = []
 var sineslider1, sineslider2, sineslider3;
+var a;
 
 
 
 
 function setup() {
   createCanvas(1200, 600);
+  rectMode(CENTER);
   makebuttons();
   sineslider1 = new SineSlider(450, 130, 600, 50, 0.01, 0, 0);
   sineslider2 = new SineSlider(450, 300, 600, 50, 0.01, 0, 0);
@@ -16,6 +18,7 @@ function setup() {
   sines.push(sineslider1);
   sines.push(sineslider2);
   sines.push(sineslider3);
+  a=new oscTypeButton(200,200,'sine',20);
   
 
 }
@@ -38,6 +41,7 @@ function draw() {
     scaledfreq = map(sines[f].value, 0, 255, 220,1000)
     voices[f].osc.freq(scaledfreq)
   }
+  a.sketch();
 }
 
 function mousePressed() {
@@ -119,5 +123,28 @@ function button(x_,y_,width_,rgb_,id) {
     fill(this.rgb[0],this.rgb[1],this.rgb[2])
     if(this.pressed==1) ellipse(this.x,this.y,this.width-5,this.width-5);
     else ellipse(this.x,this.y,this.width,this.width);
+  }
+}
+
+function oscTypeButton(x_,y_,type_,size_) {
+  this.type = type_;
+  this.size = size_;
+  this.x = x_;
+  this.y = y_;
+  
+  this.sketch = function() {
+    noFill();
+    if (this.type.localeCompare('triangle')===0) {
+      rect(this.x,this.y,this.size,this.size);
+      edgeOffset = ((this.size-8)/2)
+      triangle(this.x-edgeOffset,this.y+edgeOffset,this.x,this.y-edgeOffset,this.x+edgeOffset,this.y+edgeOffset);
+    } else if(this.type.localeCompare('square')===0) {
+      rect(this.x,this.y,this.size,this.size);
+      rect(this.x,this.y,this.size-8,this.size-8)
+    } else if(this.type.localeCompare('sine')===0) {
+      rect(this.x,this.y,this.size,this.size);
+      ellipse(this.x,this.y,this.size-8,this.size-8);
+    }
+  
   }
 }

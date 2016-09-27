@@ -18,9 +18,10 @@ function setup() {
     canvasY = windowHeight;
     buttonWidth = 100;
   } else {
-    createCanvas(900, 700);
-    canvasX = 900;
+    createCanvas(windowWidth, 700);
+    canvasX = windowWidth;
     canvasY = 700;
+    offset = (windowWidth - 660) / 2
     buttonWidth = 60;
   }
   imageMode(CENTER);
