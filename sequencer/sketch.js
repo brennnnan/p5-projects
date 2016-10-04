@@ -94,14 +94,14 @@ function loadbounce(){
 function draw() {
   background('rgba(64,224,208,1)');
   //Draw reset rectangle
-  /*strokeWeight(1);
+  strokeWeight(1);
   stroke(51);
   rect(500, 50, 200, 70, 20);
   noStroke();
   textSize(32);
   fill('rgb(60,130,200)');
   text("reset dots", 530, 95);
-  */
+  
   fill('rgb(173,255,204)');
   
   for (var c=0;c<dot_count;c++){
