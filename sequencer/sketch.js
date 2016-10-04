@@ -1,18 +1,19 @@
 dot_array = [];
 var dot_count=0;
-
+// array containing width values for swell
 var bounce=[];
 var total=-1;
 var hhc, hho, kck, snr, lt, ht, clp;
 var started=0;
+var ticker =0;
+myPart = new p5.Part();
 
 var multiplier=20;
 var patterns = new Array(7);
 
-  $(function() {
-        $(".dial").knob();  
-
-    });
+$(function() {
+  $(".dial").knob();  
+});
 
 //Loads wave files used as samples in sequencer
 function preload() {
@@ -24,8 +25,6 @@ function preload() {
   ht = loadSound('assets/mt02.wav');
   clp = loadSound('assets/cp02.wav');
 }
-
-
 
 
 function setup() {
@@ -60,7 +59,7 @@ function makephrases(bpm){
   myPhrase6 = new p5.Phrase('clap', makeSound6, patterns[5]);
   myPhrase7 = new p5.Phrase('kicker', makeSound7, patterns[6]);
   
-  myPart = new p5.Part();
+  
   myPart.addPhrase(myPhrase1);
   myPart.addPhrase(myPhrase2);
   myPart.addPhrase(myPhrase3);
@@ -72,11 +71,19 @@ function makephrases(bpm){
   myPart.onStep(grow); 
 }
 
-function grow() {
-  total = (total+1)%16;
-  for(var i=0; i<7; i++)
-    dot_array[total+(i*16)].growing = 1;
 
+// only trigger dot swells when step goes past
+
+// right now it misses the swells that come before selection because of comparisons to steps
+function grow() {
+  console.log(ticker++%16)
+  if(started==1 && ticker%16==0) started++;
+  if(started==2) {
+    total = (total+1)%16;
+    for(var i=0; i<7; i++) {
+      dot_array[total+(i*16)].growing = 1;
+    }
+  }
 }
 
 function loadbounce(){
@@ -106,13 +113,17 @@ function draw() {
   
   for (var c=0;c<dot_count;c++){
     
+    // if dot has been clicked draw border
     if(dot_array[c].clicked){
       strokeWeight(6);
       stroke('rgb(255,255,255)');
     }
+    
+    // if dot is growing, then grow it according to where it is in array
     if (dot_array[c].growing==1){
       dot_array[c].width = bounce[dot_array[c].index];
       dot_array[c].index++;
+      // when dot has swelled and shrunk, stop the cycle
       if(dot_array[c].index==18) {
         dot_array[c].growing=0; 
         dot_array[c].index=1;
@@ -124,11 +135,17 @@ function draw() {
 }
 
 function clearPatterns(){
+  // running total keeps track of iterations
+  // sets each step in pattern to 0
   var running_total=0;
+  started = 0;
+  total=-1;
+  myPart.stop();
   for (var i=0; i<7; i++){
     for (var j=0; j<16; j++) {
       patterns[i][j]=0;
       dot_array[running_total].clicked=0;
+      dot_array[running_total].growing=0;
       running_total++;
     }
   }
@@ -174,15 +191,18 @@ function mouseClicked() {
     myPart.loop();
     started++;
   }
-  
+  // if reset button is clicked
   hit = collidePointRect(mouseX,mouseY,500, 50, 200, 70);
-  if(hit)
+  if(hit) {
     clearPatterns();
-    
+  }
+  // if any of the dots are clicked, changed .clicked value to true or false if they already are 
   for(var f=0; f<dot_count; f++){
     hit = collidePointCircle(mouseX, mouseY, dot_array[f].xctr, dot_array[f].yctr, dot_array[f].width);
     if (hit) {
+      // if clicked, indicate it in pattern
       patterns[dot_array[f].colid][dot_array[f].rowid] = (patterns[dot_array[f].colid][dot_array[f].rowid]+1)%2;
+      // if turned on, turn off
       if(dot_array[f].clicked==true){
         dot_array[f].clicked=false;
         return;
