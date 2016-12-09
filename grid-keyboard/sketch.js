@@ -69,8 +69,10 @@ function drawDots() {
       num = ((dotarray[c].index) % (1000));
       dotarray[c].width = swellValues[num] * mul;
       dotarray[c].vibrator.amp(dotarray[c].width / 2)
+      fill(53,240,237);
     }
     ellipse(dotarray[c].xctr, dotarray[c].yctr, dotarray[c].width, dotarray[c].width);
+    fill(23,190,187);
   }
 }
 
@@ -85,7 +87,7 @@ function drawButton() {
 
 function draw() {
   background('#0E767B');
-  fill('#17BEBB');
+  fill(23,190,187);
 
   drawDots();
   drawButton();

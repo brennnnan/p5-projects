@@ -76,7 +76,6 @@ function makephrases(bpm){
 
 // right now it misses the swells that come before selection because of comparisons to steps
 function grow() {
-  console.log(ticker++%16)
   if(started==1 && ticker%16==0) started++;
   if(started==2) {
     total = (total+1)%16;
