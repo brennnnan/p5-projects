@@ -19,7 +19,7 @@ function draw() {
     	triangles[i].grow(2);
     }
     triangles[i].redshift();
-    if(counter%80 == 0) {
+    if(counter%30 == 0) {
       echoes.push(new triangle_object(triangles[i].x1,triangles[i].y1,triangles[i].x2,triangles[i].y2,triangles[i].x3,triangles[i].y3));
     }
   }
@@ -52,11 +52,11 @@ function triangle_object(_x1,_y1,_x2,_y2,_x3,_y3) {
   
   
   this.grow = function() {
-    this.x1--;
+    this.x1-=2;
     this.y1--;
-    this.x2++;
+    this.x2+=2;
     this.y2--;
-    this.y3++;
+    this.y3+=1.7;
   }
   
   this.sketch = function() {
