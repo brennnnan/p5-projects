@@ -16,23 +16,24 @@ function draw() {
   for(var i=0; i<triangles.length; i++) {
     triangles[i].sketch();
     if(triangles[i].x1>600) {
-    	triangles[i].grow(2);
+    	triangles[i].grow();
     }
     triangles[i].redshift();
     if(counter%30 == 0) {
       echoes.push(new triangle_object(triangles[i].x1,triangles[i].y1,triangles[i].x2,triangles[i].y2,triangles[i].x3,triangles[i].y3));
     }
   }
+	// sketch, expand and randomize color for triangles
+	// if echoes are wider than screen, remove them
   for(var h=0; h<echoes.length; h++) {
   	if(echoes[h].x1 < -windowWidth) {
   		echoes.splice(0,1);
-  		console.log("splices!")
-  		console.log(echoes.length);
   	}
     echoes[h].sketch();
     echoes[h].grow();
     echoes[h].redshift();
   }
+	
 }
 
 

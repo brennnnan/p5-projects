@@ -4,15 +4,34 @@ ch = 800;
 wid = 40;
 click = 0;
 counter = 0
+var sounds = [];
+
+function preload() {
+  sounds.push(loadSound('audio/1.mp3'));
+	sounds.push(loadSound('audio/2.mp3'));
+	sounds.push(loadSound('audio/3.mp3'));
+	sounds.push(loadSound('audio/4.mp3'));
+	sounds.push(loadSound('audio/5.mp3'));
+	sounds.push(loadSound('audio/6.mp3'));
+	sounds.push(loadSound('audio/7.mp3'));
+	sounds.push(loadSound('audio/8.mp3'));
+	sounds.push(loadSound('audio/9.mp3'));
+	sounds.push(loadSound('audio/10.mp3'));
+	sounds.push(loadSound('audio/11.mp3'));
+	sounds.push(loadSound('audio/12.mp3'));
+}
 
 function setup() {
   createCanvas(cw,ch);
   //frameRate(2)
   noStroke();
+	counterTwo = 0;
   for(var i=150; i<(cw-150); i+=(wid+wid)) {
     for(var h=150; h<(ch-150); h+=(wid+wid)) {
-      circles.push(new dot(i,h,wid,200));
+      circles.push(new dot(i,h,wid,200,sounds[counterTwo]));
+			counterTwo++;
     }
+		counterTwo = 0;
   }
 }
 
@@ -46,11 +65,12 @@ function mouseClicked(){
   }
 }
 
-function dot(_x,_y,_width,_mass) {
+function dot(_x,_y,_width,_mass, audiofile_) {
   this.position = createVector(_x,_y);
   this.width = _width;
   this.mass = _mass;
   this.clicked = 0;
+	this.audiofile = audiofile_;
   //this.mass += random(0,100)
   this.acceleration = createVector(0,0);
   this.velocity = createVector(0,0);
@@ -75,8 +95,13 @@ function dot(_x,_y,_width,_mass) {
     if(this.position.y > (height-(wid/2))) {
       this.velocity.y *= -.9;
       this.position.y = height-(wid/2);
+			this.playAudio();
     }
   }
+	
+	this.playAudio = function() {
+		this.audiofile.play();
+	}
   
   this.newcolor = function() {
     this.rgb = [random(0,255),random(0,255),random(0,255)];
