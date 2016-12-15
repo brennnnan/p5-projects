@@ -7,11 +7,13 @@ var offsety = 0;
 var dragged = 1;
 var firstoct = [69,82,110];
 var last = -1;
+start = 0;
+var height;
 
 
 function setup() {
-
-  createCanvas(1200,800);
+  height = windowHeight;
+  createCanvas(1200,height);
   rectMode(CENTER);
   osc = new p5.Oscillator();
   osc1 = new p5.Oscillator();
@@ -21,18 +23,18 @@ function setup() {
   osc5 = new p5.Oscillator();
   
   
-  shapes.push(new shape(0,70,400,80,70,0,0,osc))
+  shapes.push(new shape(0,70,100,80,70,0,0,osc))
   shapes.push(new shape(1,180,400,80,180,0,0,osc1))
-  shapes.push(new shape(1,400,400,80,400,0,0,osc2))
-  shapes.push(new shape(1,840,400,80,840,0,0,osc3))  
-  shapes.push(new shape(1,615,400,80,615,0,0,osc4))  
-  shapes.push(new shape(1,290,400,80,290,0,0,osc5))  
+  shapes.push(new shape(1,400,550,80,400,0,0,osc2))
+  shapes.push(new shape(1,840,500,80,840,0,0,osc3))  
+  shapes.push(new shape(1,615,330,80,615,0,0,osc4))  
+  shapes.push(new shape(1,290,220,80,290,0,0,osc5))  
   
   
 }
 
 function draw() {
-  background(200);
+  background('#413C58');
   strokeWeight(1);
   stroke(51)
   drawlines();
@@ -43,28 +45,47 @@ function draw() {
       shapes[act].freq = shapes[act].x+40;
       shapes[act].oscil.freq(shapes[act].freq);
       
-      shapes[act].oscil.amp(map(800-shapes[act].y,0,800,0.0,1.0))
+      shapes[act].oscil.amp(map(height-shapes[act].y,0,height,0.0,1.0))
       
     }
   }
   
   
-  fill(51)
+  fill('#A3C4BC');
   strokeWeight
   
   for(var j = 0; j<shapes.length; j++) {
     if(shapes[j].selected == 1) stroke(255),strokeWeight(3);
     else stroke(51),strokeWeight(1);
     if(shapes[j].type==1) shapes[j].drawRect();
-    else if(shapes[j].type==0) shapes[j].drawCircle();
+    else if(shapes[j].type===0) shapes[j].drawCircle();
     else if(shapes[j].type==2) shapes[j].drawTriangle();
+    if(start) shapeshift(j);
+    shapes[j].oscil.amp(map(height-shapes[j].y,0,height,0.2,1.0));
   }
+}
+
+function shapeshift(j) {
+  if(shapes[j].dir) {
+    shapes[j].y--;
+  } else shapes[j].y++;
+  if(shapes[j].y===0) {
+      shapes[j].dir = 0;
+  } if(shapes[j].y==height) {
+    shapes[j].dir = 1;
+  }
+    
+}
+
+function windowResized() {
+    resizeCanvas(1200,windowHeight);
+    height = windowHeight;
 }
 
 function drawlines() {
   for(var g=0;g<5;g++) {
     for(var d=0;d<firstoct.length;d++){
-      line(firstoct[d]*pow(2,g)-40,0,firstoct[d]*pow(2,g)-40,800)
+      line(firstoct[d]*pow(2,g)-40,0,firstoct[d]*pow(2,g)-40,height)
     }
   }
 }
@@ -78,7 +99,7 @@ function shape(_id, _x, _y, _w, _freq, _osctype, _active, oscc, _veh) {
   this.type = _osctype;
   this.active = 0;
   this.oscil = oscc;
-  this.vehicle = _veh;
+  this.dir = 1;
   this.selected = 0;
   
   this.checkHit = function() {
@@ -96,7 +117,7 @@ function shape(_id, _x, _y, _w, _freq, _osctype, _active, oscc, _veh) {
   }
   
   this.switchOsc = function() {
-    if(this.type == 0) {
+    if(this.type === 0) {
       this.oscil.setType('sine');
 
     } else if(this.type ==1) {
@@ -110,6 +131,7 @@ function shape(_id, _x, _y, _w, _freq, _osctype, _active, oscc, _veh) {
 
 
 function mousePressed() {
+  start = 1;
   for(var n=0; n<shapes.length; n++){
     hit = shapes[n].checkHit();
     if (hit) {
@@ -128,6 +150,7 @@ function mouseReleased() {
         shapes[act].oscil.freq(shapes[act].freq);
         shapes[act].oscil.amp(.5,.9);
         shapes[act].oscil.start();
+        shapes[act].oscil.freq(shapes[act].freq);
         act = -1
         return;
     }
