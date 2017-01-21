@@ -30,7 +30,10 @@ function preload() {
 
 
 function setup() {
-  createCanvas(1300, 800);
+  if(windowWidth > 1300 && windowHeight > 800) createCanvas(windowWidth,windowHeight);
+  else if(windowWidth > 1300 && windowHeight <= 800) createCanvas(windowWidth, 800);
+  else if(windowWidth <=1300 && windowHeight > 800) createCanvas(1300, windowHeight);
+  else createCanvas(1300, 800);
   
   rectMode(CENTER)
   //Fills bounce array with values used to show circles swelling
@@ -76,7 +79,7 @@ function makephrases(){
 
 // right now it misses the swells that come before selection because of comparisons to steps
 function grow() {
-  if(started==1 && ticker%16==0) started++;
+  if(started==1 && ticker%16===0) started++;
   if(started==2) {
     total = (total+1)%16;
     for(var i=0; i<7; i++) {
@@ -133,6 +136,16 @@ function draw() {
   textSize(32);
   fill('rgb(60,130,200)');
   text('bpm: '+bpm, 530, 95);
+  stroke(51)
+  strokeWeight(1)
+  
+  
+  if(bpmLock == 1) {
+    line(520,105,670,105)
+    line(520,105,520,60);
+    line(670,105,670,60);
+    line(520,60,670,60);
+  }
   
   /*
   for(var d=0; d<8; d++) {
@@ -202,8 +215,8 @@ function mouseClicked() {
   
   
 
-  if (keyCode == OPTION && keyIsPressed == true) {
-    if(bpmLock == 0) bpmLock = 1;
+  if (keyCode == OPTION && keyIsPressed === true) {
+    if(bpmLock === 0) bpmLock = 1;
     else bpmLock = 0;
     return;
   }
@@ -212,7 +225,7 @@ function mouseClicked() {
   for(var f=0; f<dot_count; f++){
     hit = collidePointCircle(mouseX, mouseY, dot_array[f].xctr, dot_array[f].yctr, dot_array[f].width);
     if (hit) {
-      if(started==0){
+      if(started === 0){
         myPart.start();
         myPart.loop();
         started++;
@@ -220,8 +233,8 @@ function mouseClicked() {
       // if clicked, indicate it in pattern
       patterns[dot_array[f].colid][dot_array[f].rowid] = (patterns[dot_array[f].colid][dot_array[f].rowid]+1)%2;
       // if turned on, turn off
-      if(dot_array[f].clicked==true){
-        dot_array[f].clicked=false;
+      if(dot_array[f].clicked === true){
+        dot_array[f].clicked = false;
         return;
       }
       dot_array[f].clicked=true;
