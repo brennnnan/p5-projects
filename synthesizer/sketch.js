@@ -10,18 +10,17 @@ var dict = {};
 dict['0'] = "sine";
 dict['1'] = "square";
 dict['2'] = "triangle";
+envelopes = []
 
 
 
 
 function setup() {
-  createCanvas(1200, 600);
+  createCanvas(1400, 600);
   rectMode(CENTER);
   makeButtons();
   makeSliders();
-  
-  
-
+  makeEnvelopes();
 }
 
 function draw() {
@@ -48,13 +47,24 @@ function draw() {
     voices[f].osc.freq(scaledfreq)
     if(buttons[f].active==1) voices[f].osc.amp(scaledVol);
   }
+  rectMode(CORNER);
+  for(var d=0; d<3; d++) {
+    envelopes[d].sketch()
+  }
+  rectMode(CENTER);
   
 }
 
+function makeEnvelopes() {
+  envelopes.push(new envelope(1000,100));
+  envelopes.push(new envelope(1000,250));
+  envelopes.push(new envelope(1000,400));
+}
+
 function makeSliders() {
-  sineslider1 = new SineSlider(450, 150, 600, 50, 0.01, 0, '#A3C4BC');
-  sineslider2 = new SineSlider(450, 300, 600, 50, 0.01, 0, '#A3C4BC');
-  sineslider3 = new SineSlider(450, 450, 600, 50, 0.01,0,'#A3C4BC');
+  sineslider1 = new SineSlider(450, 150, 500, 50, 0.0125, 0, '#A3C4BC');
+  sineslider2 = new SineSlider(450, 300, 500, 50, 0.0125, 0, '#A3C4BC');
+  sineslider3 = new SineSlider(450, 450, 500, 50, 0.0125,0,'#A3C4BC');
   volSlider1 = new SimpleSlider(300,150,100,70,'#A3C4BC');
   volSlider2 = new SimpleSlider(300,300,100,70,'#A3C4BC');
   volSlider3 = new SimpleSlider(300,450,100,70,'#A3C4BC');
@@ -214,4 +224,90 @@ function oscTypeButton(x_,y_,type_,size_,selected_) {
     }
   
   }
+}
+
+function envelope(_x,_y) {
+  this.x = _x;
+  this.y = _y;
+  this.enclosure = new rectShape(this.x, this.y, 200,100);
+  this.circlePoints = []
+
+  this.circlePoints.push(new draggableCircle(this.x+70, this.y+20, 8, 0))
+  this.circlePoints.push(new draggableCircle(this.x+100, this.y+40, 8, 1))
+  this.circlePoints.push(new draggableCircle(this.x+150, this.y+40, 8, 2))
+  this.circlePoints.push(new draggableCircle(this.x+190, this.y+96, 8, 3))
+  
+  this.sketch = function() {
+    this.enclosure.sketch()
+    fill(100,170,220);
+    
+    beginShape()
+    vertex(this.x,this.y+100);
+    vertex(this.circlePoints[0].position.x, this.circlePoints[0].position.y)
+    vertex(this.circlePoints[1].position.x, this.circlePoints[1].position.y)
+    vertex(this.circlePoints[2].position.x, this.circlePoints[2].position.y)
+    vertex(this.circlePoints[3].position.x, this.circlePoints[3].position.y+4)
+    vertex(this.x,this.y+100);
+    endShape()
+    
+    
+    for(var i=0; i<this.circlePoints.length; i++) {
+      this.circlePoints[i].display()
+    }
+    
+  }
+  
+}
+
+function rectShape(_x, _y, _w, _h) {
+  this.x = _x;
+  this.y = _y;
+  this.width = _w;
+  this.height = _h;
+  
+  this.sketch = function() {
+    fill(92,111,152);
+    rect(this.x, this.y, this.width, this.height);
+  }
+}
+
+function draggableCircle(x_,y_,w_,id_) {
+  this.position = createVector(x_,y_);
+  this.width = w_;
+  this.id = id_;
+  this.active = 0;
+  var offsetx = 0;
+  var offsety = 0;
+  var startOfClick = 1;
+  
+  
+  this.update = function() {
+    if(mouseIsPressed && this.active === 0 && startOfClick === 1) {
+      startOfClick = 0;
+      hit = collidePointCircle(mouseX, mouseY, this.position.x, this.position.y, this.width)
+      if (hit) {
+        this.active = 1;
+        offsetx = mouseX - this.position.x;
+        offsety = mouseY - this.position.y;
+      }
+    } else if(mouseIsPressed && this.active == 1 && mouseX - offsetx > envelopes[this.id].x && mouseX - offsetx < envelopes[this.id].x+300 && mouseY - offsety > envelopes[this.id].y && mouseY - offsety < envelopes[this.id].y+200) {
+      this.position.x = mouseX - offsetx;
+      if(this.id != 3) {
+        this.position.y = mouseY - offsety;
+      }
+    } else if(mouseIsPressed) {
+      startOfClick = 0;
+    } else {
+      this.active = 0;
+      startOfClick = 1
+    } 
+  }
+  
+
+  this.display = function() {
+    this.update();
+    stroke(51);
+    fill(250);
+    ellipse(this.position.x,this.position.y,this.width,this.width); 
+  } 
 }

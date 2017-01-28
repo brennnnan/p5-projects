@@ -30,7 +30,6 @@ function setup() {
   shapes.push(new shape(1,615,330,80,615,0,0,osc4))  
   shapes.push(new shape(1,290,220,80,290,0,0,osc5))  
   
-  
 }
 
 function draw() {
@@ -78,7 +77,9 @@ function shapeshift(j) {
 }
 
 function windowResized() {
-    resizeCanvas(1200,windowHeight);
+    
+    if(windowWidth > 1200) resizeCanvas(windowWidth, windowHeight);
+    else resizeCanvas(1200,windowHeight);
     height = windowHeight;
 }
 
