@@ -1,5 +1,5 @@
 buttons = []
-voices = []
+voices = [];
 lastclicked = -1;
 sines = []
 volumes = [];
@@ -11,12 +11,12 @@ dict['0'] = "sine";
 dict['1'] = "square";
 dict['2'] = "triangle";
 envelopes = []
-
+var startTime;
 
 
 
 function setup() {
-  createCanvas(1400, 600);
+  createCanvas(1400, 700);
   rectMode(CENTER);
   makeButtons();
   makeSliders();
@@ -38,27 +38,55 @@ function draw() {
       noFill();
     }
   }
+  
+  //draw all sliders
   displaySliders();
   
+  //retrieve volume and freq levels from sliders
   for(var f=0; f<voices.length; f++) {
     scaledfreq = map(sines[f].value, 0, 255, 220,1000)
-    scaledVol = map(volumes[f].value,0,255,0.0,.99);
+    scaledVol = map(volumes[f].value,2.55,255,0.0,.99);
     
     voices[f].osc.freq(scaledfreq)
     if(buttons[f].active==1) voices[f].osc.amp(scaledVol);
   }
+  
   rectMode(CORNER);
+  
+  //draw trigger button
+  rect(windowWidth/2-100,windowHeight/2+250,200,60,5)
+  
   for(var d=0; d<3; d++) {
     envelopes[d].sketch()
   }
+  
   rectMode(CENTER);
   
 }
 
+function triggerOscs() {
+  for(var a=0; a<voices.length; a++) {
+    envelopes[a].active = 1;
+    attackLevel = map(envelopes[a].circlePoints[0].position.y,envelopes[a].y+100, envelopes[a].y, 0.0, 1000.0)
+    attackTime = map(envelopes[a].circlePoints[0].position.x, envelopes[a].x, envelopes[a].x+200,0.0,10);
+    decayTime = map(envelopes[a].circlePoints[1].position.x, envelopes[a].x, envelopes[a].x+200,0.0,10)-attackTime;
+    susratio = .5;
+    releaseTime = 2;
+    voices[a].env.setADSR(attackTime,decayTime,susratio,releaseTime)
+    voices[a].env.setRange(attackLevel, 1);
+    //console.log('attack: '+attackLevel)
+    //console.log('attack time: '+attackTime)
+    //console.log('decayTime: '+decayTime)
+    startTime = millis()
+    voices[a].env.play()
+  }
+  
+}
+
 function makeEnvelopes() {
-  envelopes.push(new envelope(1000,100));
-  envelopes.push(new envelope(1000,250));
-  envelopes.push(new envelope(1000,400));
+  envelopes.push(new envelope(1000,100,0));
+  envelopes.push(new envelope(1000,250,1));
+  envelopes.push(new envelope(1000,400,2));
 }
 
 function makeSliders() {
@@ -91,6 +119,8 @@ function mousePressed() {
     hit = collidePointCircle(mouseX,mouseY,buttons[i].x,buttons[i].y,buttons[i].width);
     if(hit) {
       buttons[i].pressed=1;
+      //turns voice on and off with button press
+      voices[i].active = (voices[i].active ? 0 : 1);
       lastclicked = i;
       break;
     }
@@ -124,7 +154,12 @@ function mouseClicked() {
         buttons[ii].clickSelector(g);
       }
     }
-    
+  }
+  
+  
+  hit = collidePointCircle(mouseX, mouseY, windowWidth/2-100,windowHeight/2+250,200,60);
+  if(hit) {
+    triggerOscs()
   }
 }
 
@@ -144,7 +179,9 @@ function voice(wtype_,freq_,pan_,phase_,amp_){
   this.phase = phase_;
   this.amp = amp_;
   this.active = 0;
+  this.env = new p5.Env();
   this.osc = new p5.SinOsc(this.freq);
+  this.osc.freq(this.env)
 }
 
 function led(x_,y_,width_) {
@@ -213,11 +250,13 @@ function oscTypeButton(x_,y_,type_,size_,selected_) {
       rect(this.x,this.y,this.size,this.size);
       edgeOffset = ((this.size-8)/2)
       triangle(this.x-edgeOffset,this.y+edgeOffset,this.x,this.y-edgeOffset,this.x+edgeOffset,this.y+edgeOffset);
-    } // square
+    } 
+    // square
     else if(this.type==1) {
       rect(this.x,this.y,this.size,this.size);
       rect(this.x,this.y,this.size-8,this.size-8)
-    }  // sine
+    }  
+    // sine
     else if(this.type==0) {
       rect(this.x,this.y,this.size,this.size);
       ellipse(this.x,this.y,this.size-8,this.size-8);
@@ -226,34 +265,88 @@ function oscTypeButton(x_,y_,type_,size_,selected_) {
   }
 }
 
-function envelope(_x,_y) {
+function draggableCircle(x_,y_,w_,id_) {
+  this.position = createVector(x_,y_);
+  this.width = w_;
+  this.id = id_;
+  this.active = 0;
+  var offsetx = 0;
+  var offsety = 0;
+  var startOfClick = 1;
+  
+  
+  this.update = function(env_num) {
+    if(mouseIsPressed && this.active === 0 && startOfClick === 1) {
+      startOfClick = 0;
+      
+      hit = collidePointCircle(mouseX, mouseY, this.position.x, this.position.y, this.width)
+      if (hit) {
+        this.active = 1;
+        offsetx = mouseX - this.position.x;
+        offsety = mouseY - this.position.y;
+      }
+    } 
+      
+    else if(mouseIsPressed && this.active == 1 && (mouseX - offsetx) > envelopes[env_num].x && mouseX - offsetx < envelopes[env_num].x+200 && mouseY - offsety > envelopes[env_num].y && mouseY - offsety < envelopes[env_num].y+100) {
+      this.position.x = mouseX - offsetx;
+      if(this.id != 3) {
+        this.position.y = mouseY - offsety;
+      }
+    } else if(mouseIsPressed) {
+      startOfClick = 0;
+    } else {
+      this.active = 0;
+      startOfClick = 1
+    } 
+  }
+  
+
+  this.display = function(env_num) {
+    this.update(env_num);
+    stroke(51);
+    fill(250);
+    ellipse(this.position.x,this.position.y,this.width,this.width); 
+  }; 
+}
+
+function envelope(_x,_y,_id) {
   this.x = _x;
   this.y = _y;
   this.enclosure = new rectShape(this.x, this.y, 200,100);
-  this.circlePoints = []
+  this.circlePoints = [];
+  this.active = 0;
+  this.id = _id;
 
-  this.circlePoints.push(new draggableCircle(this.x+70, this.y+20, 8, 0))
-  this.circlePoints.push(new draggableCircle(this.x+100, this.y+40, 8, 1))
-  this.circlePoints.push(new draggableCircle(this.x+150, this.y+40, 8, 2))
-  this.circlePoints.push(new draggableCircle(this.x+190, this.y+96, 8, 3))
+  this.circlePoints.push(new draggableCircle(this.x+70, this.y+20, 8, 0));
+  this.circlePoints.push(new draggableCircle(this.x+100, this.y+40, 8, 1));
+  this.circlePoints.push(new draggableCircle(this.x+150, this.y+40, 8, 2));
+  this.circlePoints.push(new draggableCircle(this.x+190, this.y+96, 8, 3));
+  
   
   this.sketch = function() {
-    this.enclosure.sketch()
+    this.enclosure.sketch();
     fill(100,170,220);
+    //this.circlePoints[1].position.y = this.circlePoints[2].position.y;
     
-    beginShape()
+    beginShape();
     vertex(this.x,this.y+100);
-    vertex(this.circlePoints[0].position.x, this.circlePoints[0].position.y)
-    vertex(this.circlePoints[1].position.x, this.circlePoints[1].position.y)
-    vertex(this.circlePoints[2].position.x, this.circlePoints[2].position.y)
-    vertex(this.circlePoints[3].position.x, this.circlePoints[3].position.y+4)
+    vertex(this.circlePoints[0].position.x, this.circlePoints[0].position.y);
+    vertex(this.circlePoints[1].position.x, this.circlePoints[1].position.y);
+    vertex(this.circlePoints[2].position.x, this.circlePoints[2].position.y);
+    vertex(this.circlePoints[3].position.x, this.circlePoints[3].position.y+4);
     vertex(this.x,this.y+100);
-    endShape()
+    endShape();
     
-    
+
     for(var i=0; i<this.circlePoints.length; i++) {
-      this.circlePoints[i].display()
+      this.circlePoints[i].display(_id);
     }
+    
+    console.log(voices[this.id].active)
+    nowTime = millis() - startTime;
+    if(map(nowTime,0,10000,this.x,this.x+200) > this.x+200) this.active = 0;
+    if(this.active && voices[this.id].active) line(map(nowTime,0,10000,this.x,this.x+200),this.y,map(nowTime,0,10000,this.x,this.x+200),this.y+100)
+    
     
   }
   
@@ -271,43 +364,4 @@ function rectShape(_x, _y, _w, _h) {
   }
 }
 
-function draggableCircle(x_,y_,w_,id_) {
-  this.position = createVector(x_,y_);
-  this.width = w_;
-  this.id = id_;
-  this.active = 0;
-  var offsetx = 0;
-  var offsety = 0;
-  var startOfClick = 1;
-  
-  
-  this.update = function() {
-    if(mouseIsPressed && this.active === 0 && startOfClick === 1) {
-      startOfClick = 0;
-      hit = collidePointCircle(mouseX, mouseY, this.position.x, this.position.y, this.width)
-      if (hit) {
-        this.active = 1;
-        offsetx = mouseX - this.position.x;
-        offsety = mouseY - this.position.y;
-      }
-    } else if(mouseIsPressed && this.active == 1 && mouseX - offsetx > envelopes[this.id].x && mouseX - offsetx < envelopes[this.id].x+300 && mouseY - offsety > envelopes[this.id].y && mouseY - offsety < envelopes[this.id].y+200) {
-      this.position.x = mouseX - offsetx;
-      if(this.id != 3) {
-        this.position.y = mouseY - offsety;
-      }
-    } else if(mouseIsPressed) {
-      startOfClick = 0;
-    } else {
-      this.active = 0;
-      startOfClick = 1
-    } 
-  }
-  
 
-  this.display = function() {
-    this.update();
-    stroke(51);
-    fill(250);
-    ellipse(this.position.x,this.position.y,this.width,this.width); 
-  } 
-}
