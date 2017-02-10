@@ -342,7 +342,6 @@ function envelope(_x,_y,_id) {
       this.circlePoints[i].display(_id);
     }
     
-    console.log(voices[this.id].active)
     nowTime = millis() - startTime;
     if(map(nowTime,0,10000,this.x,this.x+200) > this.x+200) this.active = 0;
     if(this.active && voices[this.id].active) line(map(nowTime,0,10000,this.x,this.x+200),this.y,map(nowTime,0,10000,this.x,this.x+200),this.y+100)
