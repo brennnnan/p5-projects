@@ -1,4 +1,4 @@
-# equencer
+# Sequencer
 This is a drum sequencer inspired by the sounds of the 909. You can play with it at http://brennnnan.com/projects/sequencer/sequencer.html
 
 ## How to use:
