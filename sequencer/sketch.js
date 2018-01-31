@@ -52,6 +52,8 @@ function setup() {
   fill('rgba(10,100,200,.8');
   makephrases();
 }
+
+
 //Assigns patterns to 'phrases' and creates a part composed of all phrases.
 function makephrases(){
   myPhrase1 = new p5.Phrase('hihatc', makeSound, patterns[0]); 
