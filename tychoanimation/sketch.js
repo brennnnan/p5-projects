@@ -1,12 +1,12 @@
-cwidth = 800
-center = cwidth/2
+cwidth = 1080
+center = (cwidth/2);
 var mainCircle; 
 bars = []
 ticker = 0;
 var bgColor, circleColor;
 
 // n = how many loops before new bar
-var n = 40;
+var n = 60;
 
 // used to store color schemes and indicate which one is chosen
 colors = [];
@@ -15,9 +15,9 @@ colorindex = 0;
 function setup() {
   //makeBoxes();
   rectMode(CENTER);
-  createCanvas(cwidth,cwidth)
+  createCanvas(cwidth,1350)
   makeColors();
-  mainCircle = new circle(center,center,300)
+  mainCircle = new circle(center,center,500)
   bars.push(new bar())
   circleColor = colors[colorindex][0];
   bgColor = colors[colorindex][1]
@@ -82,7 +82,7 @@ function bar() {
     noStroke();
     rect(center,this.middle,mainCircle.width,this.height);
     this.middle +=.5;
-    if(this.middle >= 650) {
+    if(this.middle >= 950) {
       bars.shift();
     } 
     

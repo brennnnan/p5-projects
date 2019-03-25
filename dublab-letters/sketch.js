@@ -4,7 +4,7 @@ var counter = 0;
 var u;
 
 function setup() {
-  createCanvas(1200,800);
+  createCanvas(1200,860);
   rectMode(CENTER)
   
   // push ds

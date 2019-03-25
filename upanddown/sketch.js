@@ -1,7 +1,7 @@
 swell = [];
 swell2 = []
 lines = [];
-numLines = 25.0;
+numLines = 50.0;
 counter = 0;
 megacounter = 0;
 
@@ -11,6 +11,8 @@ function setup() {
   makeLines();
 }
 
+//0-1 or else crazy stuff happens
+var freq_incr = 0
 
 
 function fillSwell() {
@@ -19,7 +21,7 @@ function fillSwell() {
   var inc = TWO_PI/numLines;
   for(var i=0; i<numLines; i++) {
     swell.push(sin(a))
-    a = a + inc;
+    a = a + inc+freq_incr;
   }
 }
 
@@ -43,7 +45,8 @@ function lineObject(_x,_y) {
   this.x = _x;
   this.y = _y;
   this.id = counter;
-  this.mul = 20
+  // change this to see change
+  this.mul = 50
   
   
   

@@ -8,14 +8,13 @@ lines = []
 
 function setup() {
   createCanvas(cw,ch);
-  //frameRate(10)
-  //noStroke();
+
   for(var i=150; i<(cw-300); i+=(wid+wid/4)) {
     for(var h=150; h<(ch-150); h+=(wid+wid/4)) {
       circles.push(new dot(i+(h/2)-100,h-counter,wid,200));
       
     }
-    //lines.push(new bar(150-counter,i-25,h-counter,i+(h/2)-100))
+    
     counter+=4;
   }
 }

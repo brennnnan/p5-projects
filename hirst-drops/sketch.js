@@ -3,6 +3,7 @@ cw = 1200;
 ch = 800;
 wid = 40;
 click = 0;
+var lastedge;
 counter = 0
 var sounds = [];
 
@@ -92,10 +93,16 @@ function dot(_x,_y,_width,_mass, audiofile_) {
   }
   
   this.checkEdges = function() {
-    if(this.position.y > (height-(wid/2))) {
+    if(this.position.y > (height-(wid/2)+2)) {
       this.velocity.y *= -.9;
+      console.log("1 "+this.position.y)
+      
+        this.playAudio();
+      
       this.position.y = height-(wid/2);
-			this.playAudio();
+      console.log("2 "+this.position.y)
+			
+			
     }
   }
 	
